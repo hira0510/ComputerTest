@@ -12,6 +12,7 @@ class ArithmeticTool: NSObject {
     var newType: ComputerBtnType = .none
     var firstInfo: NumAryInfo = .init()
     var secondInfo: NumAryInfo = .init()
+    var isDEBUG: Bool = false
 
     /// 取得數字資訊(String轉變為[Int])
     private func numAryInfo(_ numStr: String, maxInt: Int, maxDec: Int) -> NumAryInfo {
@@ -40,8 +41,6 @@ class ArithmeticTool: NSObject {
         let secondStr = secondValue.expToNum
         let maxInt = max(firstStr.integerPlaces, secondStr.integerPlaces)
         let maxDec = max(firstStr.decimalPlaces, secondStr.decimalPlaces)
-        print("first:  \(firstStr)")
-        print("second: \(secondStr)")
         firstInfo = numAryInfo(firstStr, maxInt: maxInt, maxDec: maxDec)
         secondInfo = numAryInfo(secondStr, maxInt: maxInt, maxDec: maxDec)
 
@@ -49,6 +48,8 @@ class ArithmeticTool: NSObject {
         var dotIndex: Int = 0
         var isNegative: Bool = false
         newType = typeIsSub(type)
+        
+        print("\(firstStr) \(type.stringValue) \(secondStr)")
 
         switch newType {
         case .Div:

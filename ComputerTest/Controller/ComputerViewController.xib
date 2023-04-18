@@ -23,7 +23,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S9g-zw-dHn">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="22" translatesAutoresizingMaskIntoConstraints="NO" id="rkW-N8-v0a">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" minimumFontSize="22" translatesAutoresizingMaskIntoConstraints="NO" id="rkW-N8-v0a">
                             <rect key="frame" x="0.0" y="99.5" width="375" height="87.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="73"/>
                             <color key="textColor" systemColor="tertiarySystemBackgroundColor"/>
@@ -52,7 +52,7 @@
                         <constraint firstItem="rkW-N8-v0a" firstAttribute="leading" secondItem="Y4I-7z-oAD" secondAttribute="leading" id="bP5-fq-euU"/>
                         <constraint firstItem="rkW-N8-v0a" firstAttribute="centerX" secondItem="S9g-zw-dHn" secondAttribute="centerX" identifier="22" id="d0W-es-JFR"/>
                         <constraint firstAttribute="bottom" secondItem="Y4I-7z-oAD" secondAttribute="bottom" id="iwP-La-TkQ"/>
-                        <constraint firstItem="rkW-N8-v0a" firstAttribute="top" relation="greaterThanOrEqual" secondItem="S9g-zw-dHn" secondAttribute="top" identifier="33" id="kl3-AY-bCv"/>
+                        <constraint firstItem="rkW-N8-v0a" firstAttribute="top" relation="greaterThanOrEqual" secondItem="S9g-zw-dHn" secondAttribute="top" constant="5" identifier="33" id="kl3-AY-bCv"/>
                     </constraints>
                     <variation key="default">
                         <mask key="constraints">
@@ -89,7 +89,7 @@
                 <constraint firstItem="S9g-zw-dHn" firstAttribute="trailing" secondItem="Ziz-Ol-4xC" secondAttribute="trailing" id="oO9-MX-Cth"/>
                 <constraint firstItem="Ziz-Ol-4xC" firstAttribute="bottom" secondItem="S9g-zw-dHn" secondAttribute="bottom" id="wET-Ta-ef5"/>
             </constraints>
-            <point key="canvasLocation" x="-4.615384615384615" y="-681.75355450236964"/>
+            <point key="canvasLocation" x="-5.5999999999999996" y="-682.3088455772114"/>
         </view>
     </objects>
     <resources>

@@ -111,6 +111,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		84A84E6229EE441300FB7609 /* Tool */ = {
+			isa = PBXGroup;
+			children = (
+				84A0042E29E92AD200949161 /* ArithmeticTool.swift */,
+				84BCF4D329DEA10000515BFB /* Extension.swift */,
+				84BCF4D129DEA0EC00515BFB /* GlobalUtil.swift */,
+			);
+			path = Tool;
+			sourceTree = "<group>";
+		};
 		84AB134929DE8AA500DF599C /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -168,15 +178,13 @@
 				84DBDEBC29DE915000B3D858 /* ViewModel */,
 				84AB134E29DE8E9200DF599C /* Controller */,
 				84AB134929DE8AA500DF599C /* View */,
+				84A84E6229EE441300FB7609 /* Tool */,
 				84D17AC329DE742300982725 /* AppDelegate.swift */,
 				84D17AC529DE742300982725 /* SceneDelegate.swift */,
-				84BCF4D129DEA0EC00515BFB /* GlobalUtil.swift */,
 				84D17AC929DE742300982725 /* Main.storyboard */,
 				84D17ACC29DE742400982725 /* Assets.xcassets */,
 				84D17ACE29DE742400982725 /* LaunchScreen.storyboard */,
 				84D17AD129DE742400982725 /* Info.plist */,
-				84BCF4D329DEA10000515BFB /* Extension.swift */,
-				84A0042E29E92AD200949161 /* ArithmeticTool.swift */,
 			);
 			path = ComputerTest;
 			sourceTree = "<group>";

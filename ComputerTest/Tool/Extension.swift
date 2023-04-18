@@ -86,7 +86,6 @@ extension String {
         var integerPart = self.integer
         var decimalPart = self.decimal
         var exp = 0
-        print("before: \(self)")
         if self.integerPlaces >= 2 {
             while integerPart.count > 1 {
                 let last: Character = integerPart.last ?? "0"
@@ -103,10 +102,10 @@ extension String {
             }
         }
         let eStr = exp > 0 ? "e+\(exp)": "e\(exp)"
-        let decimalPart15 = decimalPart.count > 15 ? String(decimalPart.prefix(15)): decimalPart
-        let resultRegularExpression = integerPart + (decimalPart15.isEmpty ? "" : "." + decimalPart15)
+//        let decimalPart15 = decimalPart.count > 15 ? String(decimalPart.prefix(15)): decimalPart
+        let resultRegularExpression = integerPart + (decimalPart.isEmpty ? "" : "." + decimalPart)
         let result = (self.hasPrefix("-") ? "-" : "") + resultRegularExpression.toRegularExpression() + (exp == 0 ? "" : eStr)
-        print("after:  \(exp >= 15 || exp <= -15 ? result.toRegularExpression(): self)")
+        print("afterE: \(exp >= 15 || exp <= -15 ? result.toRegularExpression(): self)")
         return exp >= 15 || exp <= -15 ? result.toRegularExpression(): self
     }
     
@@ -148,10 +147,12 @@ extension String {
     var toNumStr: String {
         return String(format: "%.0f", self)
     }
+    
     var integer: String {
         let integer = self.split(separator: ".")[0]
         return String(integer).replacingOccurrences(of: "-", with: "")
     }
+    
     var integerPlaces: Int {
         return integer.count
     }
@@ -168,39 +169,19 @@ extension String {
     var decimalPlaces: Int {
         return decimal.count
     }
+    
     var toDouble: Double {
         if let double = Double(self) {
             return double
         }
         return 0
     }
+    
     var toInt: Int {
         if let int = Int(self) {
             return int
         }
         return 0
-    }
-}
-
-extension Formatter {
-    static let scientific: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .scientific
-        formatter.positiveFormat = "0.###############E+0"
-        formatter.exponentSymbol = "e" 
-        return formatter
-    }()
-}
-
-extension NSNumber {
-    var toStr: String {
-        return "\(self)"
-    }
-}
-
-extension Numeric {
-    var scientificFormatted: String {
-        return Formatter.scientific.string(for: self) ?? ""
     }
 }
 
@@ -224,5 +205,20 @@ extension UIButton {
           UIBezierPath(rect: CGRect(x: 0, y: 0, width: 1, height: 1)).fill()
         }
         setBackgroundImage(colorImage, for: state)
+    }
+}
+
+extension UILabel {
+    func setIsBottom(_ isBottom: Bool) {
+        if isBottom {
+            let fontSize = self.font?.pointSize ?? 12.0
+            let fontHeight = self.font?.lineHeight ?? fontSize
+            let num = Int(self.frame.size.height / fontHeight)
+            let newLinesToPad = num - self.numberOfLines
+            self.numberOfLines = 0
+            for _ in 0..<abs(newLinesToPad) {
+                self.text = " \n" + (self.text ?? "")
+            }
+        }
     }
 }

@@ -93,8 +93,13 @@ class ComputerViewModel: NSObject {
 
     private func equalTool(_ fromEqual: Bool = false) {
         guard equalTempData.isContinuous() || !beforeValue.value.isEmpty else { return }
-        let firstValue = equalTempData.isContinuous() ? mainValue.value: beforeValue.value
-        let secondValue = equalTempData.isContinuous() ? equalTempData.mainValue.value: mainValue.value
+        var firstValue = equalTempData.isContinuous() ? mainValue.value: beforeValue.value
+        var secondValue = equalTempData.isContinuous() ? equalTempData.mainValue.value: mainValue.value
+        var firstTestValue = "48646423897898943158468971867676454562"
+        var secondTestValue = "7"
+        firstValue = ArithmeticTool().isDEBUG ? firstTestValue: firstValue
+        secondValue = ArithmeticTool().isDEBUG ? secondTestValue: secondValue
+        
         let type = equalTempData.isContinuous() ? equalTempData.type.value: toolType.value
         var equal: Double = 0
         switch type {
@@ -110,7 +115,7 @@ class ComputerViewModel: NSObject {
             self.toolType.accept(.none)
         }
         self.beforeValue.accept("")
-        if equal.isInfinite || equal.isNaN || (firstValue != "0" && secondValue != "0" && equal == 0) {
+        if ArithmeticTool().isDEBUG || equal.isInfinite || equal.isNaN || (firstValue != "0" && secondValue != "0" && equal == 0) {
             self.mainValue.accept(ArithmeticTool().factorial(firstValue, secondValue, type).numToExp)
         } else {
             self.mainValue.accept(equal.toString)
