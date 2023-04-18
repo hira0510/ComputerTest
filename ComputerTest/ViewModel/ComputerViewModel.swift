@@ -6,73 +6,69 @@
 //
 
 import UIKit
-import RxSwift
-import RxCocoa
 
 class ComputerViewModel: NSObject {
-
-    var disposeBag = DisposeBag()
-    var mainValue: BehaviorRelay<String> = BehaviorRelay(value: "0")
-    var btnMainModel: BehaviorRelay<[[ComputerBtnType]]> = BehaviorRelay(value: [])
+    @objc dynamic var mainValue: String = ""
+    @objc dynamic var collectionFrame: CGRect = .zero
+    var btnMainModel: [[ComputerBtnType]] = []
     var orient: UIDeviceOrientation = .portrait
-    var collectionFrame: BehaviorRelay<CGRect> = BehaviorRelay(value: CGRect.zero)
     private var equalTempData: ContinuousEqualData = .init()
-    private var beforeValue: BehaviorRelay<String> = BehaviorRelay(value: "")
-    private var toolType: BehaviorRelay<ComputerBtnType> = BehaviorRelay(value: .none)
+    private var beforeValue: String = ""
+    private var toolType: ComputerBtnType = .none
 
     func acToC() -> (indexPath: IndexPath, suc: Bool) {
-        let mainValueIs0 = mainValue.value == "0"
+        let mainValueIs0 = mainValue == "0"
         let section = 0
         let find: ComputerBtnType = mainValueIs0 ? .C : .Ac
-        var btnModel = btnMainModel.value
+        var btnModel = btnMainModel
         guard let findC = (btnModel[section].firstIndex { type in return type == find }) else { return (IndexPath.init(), false) }
         let changeTo: ComputerBtnType = mainValueIs0 ? .Ac : .C
         btnModel[section][findC] = changeTo
-        btnMainModel.accept(btnModel)
+        btnMainModel = btnModel
         return (IndexPath(item: findC, section: section), true)
     }
 
     func didClickComputerCellBtn(_ type: ComputerBtnType) {
-        var nowTitle = mainValue.value
+        var nowTitle = mainValue
         switch type {
         case .Ac:
-            mainValue.accept("0")
-            beforeValue.accept("")
-            toolType.accept(.none)
+            mainValue = "0"
+            beforeValue = ""
+            toolType = .none
             equalTempData.clear()
         case .C:
-            mainValue.accept("0")
+            mainValue = "0"
             equalTempData.clear()
         case .PlusOrMinus:
             if nowTitle.first == "-" {
                 nowTitle.removeFirst()
-                mainValue.accept(nowTitle)
-            } else if mainValue.value != "0" {
-                mainValue.accept("-" + nowTitle)
+                mainValue = nowTitle
+            } else if mainValue != "0" {
+                mainValue = "-" + nowTitle
             }
         case .Percent:
             let textDouble = nowTitle.toDouble / 100
-            mainValue.accept(textDouble.toString)
+            mainValue = textDouble.toString
         case .Div, .Add, .Sub, .Mult: tool(type)
         case .Equal:
             equalTool(true)
         case .Dot:
-            if !mainValue.value.contains(".") {
-                mainValue.accept(mainValue.value + ".")
+            if !mainValue.contains(".") {
+                mainValue += "."
             }
         case .Num(let num):
-            switch InputStatus.getType(main: mainValue.value, before: beforeValue.value, type: toolType.value) {
+            switch InputStatus.getType(main: mainValue, before: beforeValue, type: toolType) {
             case .NUM:
-                mainValue.accept(nowTitle == "0" || equalTempData.isContinuous() ? num : nowTitle + num)
+                mainValue = nowTitle == "0" || equalTempData.isContinuous() ? num : nowTitle + num
             case .NUM_FORMULA_NUM:
-                mainValue.accept(nowTitle == "0" ? num : nowTitle + num)
+                mainValue = nowTitle == "0" ? num : nowTitle + num
             case .NUM_FORMULA:
                 if equalTempData.isContinuous() {
-                    toolType.accept(.none)
-                } else if beforeValue.value.isEmpty {
-                    beforeValue.accept(nowTitle)
+                    toolType = .none
+                } else if beforeValue.isEmpty {
+                    beforeValue = nowTitle
                 }
-                mainValue.accept(num)
+                mainValue = num
             }
             equalTempData.clear()
         case .Other(_), .none: break
@@ -80,11 +76,11 @@ class ComputerViewModel: NSObject {
     }
 
     private func tool(_ toolType: ComputerBtnType) {
-        self.toolType.accept(toolType)
+        self.toolType = toolType
         equalTempData.clear()
 
         guard toolType != .none else { return }
-        switch InputStatus.getType(main: mainValue.value, before: beforeValue.value, type: toolType) {
+        switch InputStatus.getType(main: mainValue, before: beforeValue, type: toolType) {
         case .NUM: break
         case .NUM_FORMULA: break
         case .NUM_FORMULA_NUM: equalTool()
@@ -92,15 +88,15 @@ class ComputerViewModel: NSObject {
     }
 
     private func equalTool(_ fromEqual: Bool = false) {
-        guard equalTempData.isContinuous() || !beforeValue.value.isEmpty else { return }
-        var firstValue = equalTempData.isContinuous() ? mainValue.value: beforeValue.value
-        var secondValue = equalTempData.isContinuous() ? equalTempData.mainValue.value: mainValue.value
-        var firstTestValue = "48646423897898943158468971867676454562"
-        var secondTestValue = "7"
+        guard equalTempData.isContinuous() || !beforeValue.isEmpty else { return }
+        var firstValue = equalTempData.isContinuous() ? mainValue: beforeValue
+        var secondValue = equalTempData.isContinuous() ? equalTempData.mainValue: mainValue
+        let firstTestValue = "48646423897898943158468971867676454562"
+        let secondTestValue = "7"
         firstValue = ArithmeticTool().isDEBUG ? firstTestValue: firstValue
         secondValue = ArithmeticTool().isDEBUG ? secondTestValue: secondValue
         
-        let type = equalTempData.isContinuous() ? equalTempData.type.value: toolType.value
+        let type = equalTempData.isContinuous() ? equalTempData.type: toolType
         var equal: Double = 0
         switch type {
         case .Div: equal = firstValue.toDouble / secondValue.toDouble
@@ -112,13 +108,13 @@ class ComputerViewModel: NSObject {
         
         if fromEqual {
             self.equalTempData = ContinuousEqualData(type: type, main: secondValue)
-            self.toolType.accept(.none)
+            self.toolType = .none
         }
-        self.beforeValue.accept("")
+        self.beforeValue = ""
         if ArithmeticTool().isDEBUG || equal.isInfinite || equal.isNaN || (firstValue != "0" && secondValue != "0" && equal == 0) {
-            self.mainValue.accept(ArithmeticTool().factorial(firstValue, secondValue, type).numToExp)
+            self.mainValue = ArithmeticTool().factorial(firstValue, secondValue, type).numToExp
         } else {
-            self.mainValue.accept(equal.toString)
+            self.mainValue = equal.toString
         }
     }
 
@@ -133,15 +129,15 @@ class ComputerViewModel: NSObject {
             let isLandscape = mainBounds.width > mainBounds.height
             self.orient = isLandscape ? .landscapeLeft : .portrait
         }
-        self.btnMainModel.accept(ComputerBtnModel().getModel(self.orient))
+        self.btnMainModel = ComputerBtnModel().getModel(self.orient)
     }
 
     func getColumn() -> Int {
-        return btnMainModel.value.first?.count ?? 0
+        return btnMainModel.first?.count ?? 0
     }
 
     func getRow() -> Int {
-        return btnMainModel.value.count
+        return btnMainModel.count
     }
 
     func getHSpace() -> CGFloat {
@@ -163,18 +159,18 @@ class ComputerViewModel: NSObject {
         let hSpace = getHSpace()
         //w
         let cellSpaceWidth = wSpace * (getColumn().toDouble - 1)
-        let cellAllWidth = floor(collectionFrame.value.width) - cellSpaceWidth
+        let cellAllWidth = floor(collectionFrame.width) - cellSpaceWidth
         let cellMaxWidth = (cellAllWidth / getColumn().toDouble).rounded(.down)
         //h
         let cellSpaceHeight = hSpace * (getRow().toDouble - 1)
-        let cellAllHeight = floor(collectionFrame.value.height) - cellSpaceHeight - 5
+        let cellAllHeight = floor(collectionFrame.height) - cellSpaceHeight - 5
         let cellMaxHeight = (cellAllHeight / getRow().toDouble).rounded(.down)
 
         return (cellMaxWidth, cellMaxHeight)
     }
 
     func getCellSize(_ indexPath: IndexPath = IndexPath(item: 0, section: 0)) -> CGSize {
-        let item = btnMainModel.value[indexPath.section][indexPath.item]
+        let item = btnMainModel[indexPath.section][indexPath.item]
         let isLandscape = orient == .landscapeRight || orient == .landscapeLeft
         let cellSize = calculateCellSize()
         let portraitSize = cellSize.h > cellSize.w ? cellSize.w : cellSize.h
@@ -193,14 +189,14 @@ class ComputerViewModel: NSObject {
     func getLeftInsetForSection() -> CGFloat {
         let columnCellSpace = getWSpace() * (getColumn().toDouble - 1)
         let columnCellAllWidth = getCellSize().width * getColumn().toDouble
-        let leftInset = (collectionFrame.value.width - columnCellSpace - columnCellAllWidth) / 2
+        let leftInset = (collectionFrame.width - columnCellSpace - columnCellAllWidth) / 2
         return leftInset > 0 ? leftInset : 0
     }
 
     func getTopInsetForSection() -> CGFloat {
         let rowCellSpace = getHSpace() * (getRow().toDouble - 1)
         let rowCellAllHeight = getCellSize().height * getRow().toDouble
-        let topInset = (collectionFrame.value.height - rowCellSpace - rowCellAllHeight) / 2
+        let topInset = (collectionFrame.height - rowCellSpace - rowCellAllHeight) / 2
         return topInset > 0 ? topInset : 0
     }
 }

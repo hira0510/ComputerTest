@@ -10,6 +10,7 @@
 		39A4913E5FDCF35622935403 /* Pods_ComputerTest_ComputerTestUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F12E24C9A42B20493B35E67 /* Pods_ComputerTest_ComputerTestUITests.framework */; };
 		849AB32929E7F706003046A8 /* ArithmeticModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AB32829E7F706003046A8 /* ArithmeticModel.swift */; };
 		84A0042F29E92AD200949161 /* ArithmeticTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A0042E29E92AD200949161 /* ArithmeticTool.swift */; };
+		84A84E6829EE8AF500FB7609 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A84E6729EE8AF500FB7609 /* PaddingLabel.swift */; };
 		84AB135129DE8EAF00DF599C /* ComputerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AB134F29DE8EAF00DF599C /* ComputerViewController.swift */; };
 		84AB135229DE8EAF00DF599C /* ComputerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84AB135029DE8EAF00DF599C /* ComputerViewController.xib */; };
 		84BCF4D229DEA0EC00515BFB /* GlobalUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BCF4D129DEA0EC00515BFB /* GlobalUtil.swift */; };
@@ -55,6 +56,7 @@
 		6E37B6373609E0A3FCA03B80 /* Pods-ComputerTest-ComputerTestUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ComputerTest-ComputerTestUITests.release.xcconfig"; path = "Target Support Files/Pods-ComputerTest-ComputerTestUITests/Pods-ComputerTest-ComputerTestUITests.release.xcconfig"; sourceTree = "<group>"; };
 		849AB32829E7F706003046A8 /* ArithmeticModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArithmeticModel.swift; sourceTree = "<group>"; };
 		84A0042E29E92AD200949161 /* ArithmeticTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArithmeticTool.swift; sourceTree = "<group>"; };
+		84A84E6729EE8AF500FB7609 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		84AB134F29DE8EAF00DF599C /* ComputerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComputerViewController.swift; sourceTree = "<group>"; };
 		84AB135029DE8EAF00DF599C /* ComputerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ComputerViewController.xib; sourceTree = "<group>"; };
 		84BCF4D129DEA0EC00515BFB /* GlobalUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalUtil.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 			children = (
 				84DBDEB829DE903F00B3D858 /* ComputerBtnCell.swift */,
 				84DBDEB929DE903F00B3D858 /* ComputerBtnCell.xib */,
+				84A84E6729EE8AF500FB7609 /* PaddingLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -478,6 +481,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84A84E6829EE8AF500FB7609 /* PaddingLabel.swift in Sources */,
 				84A0042F29E92AD200949161 /* ArithmeticTool.swift in Sources */,
 				84D17AC829DE742300982725 /* ViewController.swift in Sources */,
 				84BCF4D629DEA3B100515BFB /* ComputerViewModel.swift in Sources */,

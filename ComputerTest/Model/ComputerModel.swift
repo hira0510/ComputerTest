@@ -110,21 +110,21 @@ enum InputStatus {
 }
 
 class ContinuousEqualData {
-    var type: BehaviorRelay<ComputerBtnType> = BehaviorRelay(value: .none)
-    var mainValue: BehaviorRelay<String> = BehaviorRelay(value: "")
+    var type: ComputerBtnType = .none
+    var mainValue: String = ""
     
     init(type: ComputerBtnType = .none, main: String = "") {
-        self.type.accept(type)
-        self.mainValue.accept(main)
+        self.type = type
+        self.mainValue = main
     }
     
     func clear() {
-        self.type.accept(.none)
-        self.mainValue.accept("")
+        self.type = .none
+        self.mainValue = ""
     }
     
     func isContinuous() -> Bool {
-        return self.type.value != .none && !self.mainValue.value.isEmpty
+        return self.type != .none && !self.mainValue.isEmpty
     }
 }
 

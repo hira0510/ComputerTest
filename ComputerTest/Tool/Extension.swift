@@ -209,16 +209,23 @@ extension UIButton {
 }
 
 extension UILabel {
-    func setIsBottom(_ isBottom: Bool) {
-        if isBottom {
-            let fontSize = self.font?.pointSize ?? 12.0
-            let fontHeight = self.font?.lineHeight ?? fontSize
-            let num = Int(self.frame.size.height / fontHeight)
-            let newLinesToPad = num - self.numberOfLines
-            self.numberOfLines = 0
-            for _ in 0..<abs(newLinesToPad) {
-                self.text = " \n" + (self.text ?? "")
-            }
+    func setIsBottom() {
+        let fontSize = self.font?.pointSize ?? 0
+        let fontHeight = self.font?.lineHeight ?? fontSize
+        let num = Int(self.frame.size.height / fontHeight)
+        let newLinesToPad = num - self.numberOfLines
+        self.numberOfLines = 0
+        for _ in 0..<abs(newLinesToPad) {
+            self.text = " \n" + (self.text ?? "")
         }
+    }
+    
+    func calculateMaxLines() -> Int {
+        let maxSize = CGSize(width: frame.size.width, height: CGFloat(Float.infinity))
+        let charSize = font.lineHeight
+        let text = (self.text ?? "") as NSString
+        let textSize = text.boundingRect(with: maxSize, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font!], context: nil)
+        let linesRoundedUp = Int(ceil(textSize.height / charSize))
+        return linesRoundedUp
     }
 }
