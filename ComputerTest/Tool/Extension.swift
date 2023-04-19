@@ -56,8 +56,8 @@ extension Double {
     
     var toString: String {
         if self.truncatingRemainder(dividingBy: 1) == 0 {
-            if self >= 1e+15 || self <= 1e-15 {
-                return self.toStr
+            if self >= pow(10, 16) || self <= pow(10, -16) {
+                return self.toStr.toRegularExpression()
             } else {
                 return self.toNumStr
             }
@@ -205,27 +205,5 @@ extension UIButton {
           UIBezierPath(rect: CGRect(x: 0, y: 0, width: 1, height: 1)).fill()
         }
         setBackgroundImage(colorImage, for: state)
-    }
-}
-
-extension UILabel {
-    func setIsBottom() {
-        let fontSize = self.font?.pointSize ?? 0
-        let fontHeight = self.font?.lineHeight ?? fontSize
-        let num = Int(self.frame.size.height / fontHeight)
-        let newLinesToPad = num - self.numberOfLines
-        self.numberOfLines = 0
-        for _ in 0..<abs(newLinesToPad) {
-            self.text = " \n" + (self.text ?? "")
-        }
-    }
-    
-    func calculateMaxLines() -> Int {
-        let maxSize = CGSize(width: frame.size.width, height: CGFloat(Float.infinity))
-        let charSize = font.lineHeight
-        let text = (self.text ?? "") as NSString
-        let textSize = text.boundingRect(with: maxSize, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font!], context: nil)
-        let linesRoundedUp = Int(ceil(textSize.height / charSize))
-        return linesRoundedUp
     }
 }

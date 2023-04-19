@@ -11,15 +11,18 @@ class ComputerViewController: UIViewController {
 
     @IBOutlet weak var mCollectionView: UICollectionView!
     @IBOutlet weak var numLabel: UILabel!
-
+    @IBOutlet weak var calculateLabel: UILabel!
+    
     private let viewModel = ComputerViewModel()
     private var mainValueObs: NSKeyValueObservation?
     private var collectionFrameObs: NSKeyValueObservation?
-
+    private var calculateStrObs: NSKeyValueObservation?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.changeBtnModel()
         setupCollectionView()
+        addPanGesture()
         bind()
     }
 
@@ -43,6 +46,13 @@ class ComputerViewController: UIViewController {
         mCollectionView.dataSource = self
         mCollectionView.register(ComputerBtnCell.nib, forCellWithReuseIdentifier: "ComputerBtnCell")
     }
+    
+    private func addPanGesture() {
+        let pan: UIPanGestureRecognizer = UIPanGestureRecognizer.init(target: target, action: Selector(("returnReviousResult:")))
+        self.view.addGestureRecognizer(pan)
+        pan.delegate = self
+        self.view.addGestureRecognizer(pan)
+    }
 
     private func bind() {
         mainValueObs = viewModel.observe(\.mainValue, options: [.old, .new]) { [weak self] (vm, change) in
@@ -58,8 +68,18 @@ class ComputerViewController: UIViewController {
             guard let `self` = self else { return }
             self.mCollectionView.reloadData()
         }
+        calculateStrObs = viewModel.observe(\.calculateInfo, options: [.old, .new]) { [weak self] (vm, change) in
+            guard let `self` = self, let newValue = change.newValue else { return }
+            if newValue.complete {
+                self.calculateLabel.text = newValue.str
+            } else {
+                self.calculateLabel.text = ""
+                self.numLabel.text = newValue.str
+            }
+        }
         addObserver(self, forKeyPath: "mainValue", options: [.new], context: nil)
         addObserver(self, forKeyPath: "collectionFrame", options: [.new], context: nil)
+        addObserver(self, forKeyPath: "calculateStr", options: [.new], context: nil)
     }
 }
 
@@ -105,5 +125,17 @@ extension ComputerViewController: UICollectionViewDelegate, UICollectionViewData
 extension ComputerViewController: ComputerBtnCellProtocol {
     func clickCellBtn(_ type: ComputerBtnType) {
         viewModel.didClickComputerCellBtn(type)
+    }
+}
+
+extension ComputerViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return false }
+        let movePoint: CGPoint = pan.translation(in: self.view)
+        let absX: CGFloat = abs(movePoint.x)
+        let absY: CGFloat = abs(movePoint.y)
+        guard absX > absY, movePoint.x > 0 else { return false }
+        self.viewModel.returnReviousResult()
+        return true
     }
 }

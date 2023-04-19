@@ -8,10 +8,13 @@
 import UIKit
 
 class ComputerViewModel: NSObject {
+    
     @objc dynamic var mainValue: String = ""
+    @objc dynamic var calculateInfo: CalculateInfo = .init()
     @objc dynamic var collectionFrame: CGRect = .zero
     var btnMainModel: [[ComputerBtnType]] = []
     var orient: UIDeviceOrientation = .portrait
+    private var tempEqual: String = "0"
     private var equalTempData: ContinuousEqualData = .init()
     private var beforeValue: String = ""
     private var toolType: ComputerBtnType = .none
@@ -35,6 +38,7 @@ class ComputerViewModel: NSObject {
             mainValue = "0"
             beforeValue = ""
             toolType = .none
+            calculateInfo.clear()
             equalTempData.clear()
         case .C:
             mainValue = "0"
@@ -73,6 +77,15 @@ class ComputerViewModel: NSObject {
             equalTempData.clear()
         case .Other(_), .none: break
         }
+        
+        guard type != .Equal else { return }
+        switch InputStatus.getType(main: mainValue, before: beforeValue, type: toolType) {
+        case .NUM_FORMULA_NUM:
+            self.calculateInfo = CalculateInfo("\(beforeValue) \(toolType.stringValue) \(mainValue)")
+        case .NUM, .NUM_FORMULA:
+            let value = beforeValue.isEmpty ? mainValue: beforeValue
+            self.calculateInfo = CalculateInfo("\(value) \(toolType.stringValue)")
+        }
     }
 
     private func tool(_ toolType: ComputerBtnType) {
@@ -81,8 +94,7 @@ class ComputerViewModel: NSObject {
 
         guard toolType != .none else { return }
         switch InputStatus.getType(main: mainValue, before: beforeValue, type: toolType) {
-        case .NUM: break
-        case .NUM_FORMULA: break
+        case .NUM, .NUM_FORMULA: break
         case .NUM_FORMULA_NUM: equalTool()
         }
     }
@@ -110,12 +122,22 @@ class ComputerViewModel: NSObject {
             self.equalTempData = ContinuousEqualData(type: type, main: secondValue)
             self.toolType = .none
         }
-        self.beforeValue = ""
+        
         if ArithmeticTool().isDEBUG || equal.isInfinite || equal.isNaN || (firstValue != "0" && secondValue != "0" && equal == 0) {
             self.mainValue = ArithmeticTool().factorial(firstValue, secondValue, type).numToExp
         } else {
             self.mainValue = equal.toString
         }
+        
+        self.calculateInfo = CalculateInfo("\(firstValue) \(type.stringValue) \(secondValue) = ", true)
+        self.beforeValue = ""
+        self.tempEqual = self.mainValue
+    }
+    
+    func returnReviousResult() {
+        self.mainValue = self.tempEqual
+        self.beforeValue = ""
+        self.toolType = .none
     }
 
     func changeBtnModel() {

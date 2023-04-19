@@ -109,6 +109,21 @@ enum InputStatus {
     }
 }
 
+@objc class CalculateInfo: NSObject {
+    var str: String = ""
+    var complete: Bool = false
+    
+    init(_ str: String = "", _ complete: Bool = false) {
+        self.str = str
+        self.complete = complete
+    }
+    
+    func clear() {
+        self.str = ""
+        self.complete = false
+    }
+}
+
 class ContinuousEqualData {
     var type: ComputerBtnType = .none
     var mainValue: String = ""
