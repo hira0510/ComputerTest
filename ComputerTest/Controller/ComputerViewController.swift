@@ -26,11 +26,6 @@ class ComputerViewController: UIViewController {
         bind()
     }
 
-//    deinit {
-//        self.mainValueObs?.invalidate()
-//        self.collectionFrameObs?.invalidate()
-//    }
-
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         coordinator.animate(alongsideTransition: { (UIViewControllerTransitionCoordinatorContext) -> Void in
         }, completion: { [weak self] (UIViewControllerTransitionCoordinatorContext) -> Void in
@@ -69,13 +64,9 @@ class ComputerViewController: UIViewController {
             self.mCollectionView.reloadData()
         }
         calculateStrObs = viewModel.observe(\.calculateInfo, options: [.old, .new]) { [weak self] (vm, change) in
-            guard let `self` = self, let newValue = change.newValue else { return }
-            if newValue.complete {
-                self.calculateLabel.text = newValue.str
-            } else {
-                self.calculateLabel.text = ""
-                self.numLabel.text = newValue.str
-            }
+            guard let `self` = self, let newValue = change.newValue, let last = newValue.last else { return }
+            self.calculateLabel.text = last.complete ? last.course: ""
+            self.numLabel.text = last.complete ? last.result: last.course
         }
         addObserver(self, forKeyPath: "mainValue", options: [.new], context: nil)
         addObserver(self, forKeyPath: "collectionFrame", options: [.new], context: nil)
@@ -137,5 +128,24 @@ extension ComputerViewController: UIGestureRecognizerDelegate {
         guard absX > absY, movePoint.x > 0 else { return false }
         self.viewModel.returnReviousResult()
         return true
+    }
+}
+
+extension ComputerViewController {
+    override var keyCommands: [UIKeyCommand]? {
+        let keyStrAry = ["+", "-", "=", "%", ".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "C"]
+        var keyAry: [UIKeyCommand] = keyStrAry.map { UIKeyCommand(input: $0, modifierFlags: [], action: #selector(self.clickKeyboard), discoverabilityTitle: $0) }
+        keyAry.append(UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(self.clickKeyboard), discoverabilityTitle: "="))
+        keyAry.append(UIKeyCommand(input: "/", modifierFlags: [], action: #selector(self.clickKeyboard), discoverabilityTitle: "÷"))
+        keyAry.append(UIKeyCommand(input: "*", modifierFlags: [], action: #selector(self.clickKeyboard), discoverabilityTitle: "x"))
+        keyAry.append(UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(self.clickKeyboard), discoverabilityTitle: "AC"))
+        keyAry.append(UIKeyCommand(input: "-", modifierFlags: [.command], action: #selector(self.clickKeyboard), discoverabilityTitle: "±"))
+        return keyAry
+    }
+    
+    @objc func clickKeyboard(sender: UIKeyCommand) {
+        guard let typeStr = sender.discoverabilityTitle else { return }
+        let type = ComputerBtnType.type(typeStr)
+        clickCellBtn(type)
     }
 }

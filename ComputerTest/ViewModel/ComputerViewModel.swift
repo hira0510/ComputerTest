@@ -9,15 +9,14 @@ import UIKit
 
 class ComputerViewModel: NSObject {
     
-    @objc dynamic var mainValue: String = ""
-    @objc dynamic var calculateInfo: CalculateInfo = .init()
-    @objc dynamic var collectionFrame: CGRect = .zero
-    var btnMainModel: [[ComputerBtnType]] = []
-    var orient: UIDeviceOrientation = .portrait
-    private var tempEqual: String = "0"
     private var equalTempData: ContinuousEqualData = .init()
     private var beforeValue: String = ""
     private var toolType: ComputerBtnType = .none
+    @objc dynamic var mainValue: String = ""
+    @objc dynamic var calculateInfo: [CalculateInfo] = [.init()]
+    @objc dynamic var collectionFrame: CGRect = .zero
+    var btnMainModel: [[ComputerBtnType]] = []
+    var orient: UIDeviceOrientation = .portrait
 
     func acToC() -> (indexPath: IndexPath, suc: Bool) {
         let mainValueIs0 = mainValue == "0"
@@ -38,7 +37,7 @@ class ComputerViewModel: NSObject {
             mainValue = "0"
             beforeValue = ""
             toolType = .none
-            calculateInfo.clear()
+            calculateInfo.last?.clear()
             equalTempData.clear()
         case .C:
             mainValue = "0"
@@ -61,7 +60,8 @@ class ComputerViewModel: NSObject {
                 mainValue += "."
             }
         case .Num(let num):
-            switch InputStatus.getType(main: mainValue, before: beforeValue, type: toolType) {
+            let inputStatus = InputStatus.getType(main: mainValue, before: beforeValue, type: toolType)
+            switch inputStatus {
             case .NUM:
                 mainValue = nowTitle == "0" || equalTempData.isContinuous() ? num : nowTitle + num
             case .NUM_FORMULA_NUM:
@@ -79,12 +79,16 @@ class ComputerViewModel: NSObject {
         }
         
         guard type != .Equal else { return }
-        switch InputStatus.getType(main: mainValue, before: beforeValue, type: toolType) {
-        case .NUM_FORMULA_NUM:
-            self.calculateInfo = CalculateInfo("\(beforeValue) \(toolType.stringValue) \(mainValue)")
-        case .NUM, .NUM_FORMULA:
-            let value = beforeValue.isEmpty ? mainValue: beforeValue
-            self.calculateInfo = CalculateInfo("\(value) \(toolType.stringValue)")
+        let inputStatus = InputStatus.getType(main: mainValue, before: beforeValue, type: toolType)
+        let value = beforeValue.isEmpty ? mainValue: beforeValue
+        let course = inputStatus == .NUM_FORMULA_NUM ? "\(beforeValue) \(toolType.stringValue) \(mainValue)": "\(value) \(toolType.stringValue)"
+        if let last = self.calculateInfo.last {
+            if last.complete {
+                self.calculateInfo.append(CalculateInfo(course))
+            } else {
+                last.update(course)
+                self.calculateInfo[self.calculateInfo.count - 1] = last
+            }
         }
     }
 
@@ -129,13 +133,26 @@ class ComputerViewModel: NSObject {
             self.mainValue = equal.toString
         }
         
-        self.calculateInfo = CalculateInfo("\(firstValue) \(type.stringValue) \(secondValue) = ", true)
+        if let last = self.calculateInfo.last {
+            if last.complete {
+                self.calculateInfo.append(CalculateInfo("\(firstValue) \(type.stringValue) \(secondValue) = ", self.mainValue, true))
+            } else {
+                self.calculateInfo[self.calculateInfo.count - 1] = CalculateInfo("\(firstValue) \(type.stringValue) \(secondValue) = ", self.mainValue, true)
+            }
+        }
         self.beforeValue = ""
-        self.tempEqual = self.mainValue
     }
     
     func returnReviousResult() {
-        self.mainValue = self.tempEqual
+        if let last = self.calculateInfo.last, last.complete {
+            if self.calculateInfo.count > 1 {
+                self.calculateInfo.removeLast()
+            } else {
+                last.clear()
+                self.calculateInfo[0] = last
+            }
+        }
+        self.mainValue = self.calculateInfo.last?.result ?? "0"
         self.beforeValue = ""
         self.toolType = .none
     }

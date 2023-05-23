@@ -48,6 +48,23 @@ enum ComputerBtnType {
         case .none: return ""
         }
     }
+    
+    static func type(_ str: String) -> ComputerBtnType {
+        switch str {
+        case "AC": return .Ac
+        case "C": return .C
+        case "±": return .PlusOrMinus
+        case "%": return .Percent
+        case "÷": return .Div
+        case "+": return .Add
+        case "-": return .Sub
+        case "x": return .Mult
+        case "=": return .Equal
+        case ".": return .Dot
+        case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9": return .Num(str)
+        default: return .none
+        }
+    }
 
     static func == (lhs: ComputerBtnType, rhs: ComputerBtnType) -> Bool {
         return lhs.stringValue == rhs.stringValue
@@ -110,16 +127,25 @@ enum InputStatus {
 }
 
 @objc class CalculateInfo: NSObject {
-    var str: String = ""
+    var course: String = ""
+    var result: String = ""
     var complete: Bool = false
     
-    init(_ str: String = "", _ complete: Bool = false) {
-        self.str = str
+    init(_ course: String = "", _ result: String = "0", _ complete: Bool = false) {
+        self.course = course
+        self.result = result
+        self.complete = complete
+    }
+    
+    func update(_ course: String = "", _ result: String = "0", _ complete: Bool = false) {
+        self.course = course.isEmpty ? self.course: course
+        self.result = result.isEmpty ? self.result: result
         self.complete = complete
     }
     
     func clear() {
-        self.str = ""
+        self.course = ""
+        self.result = "0"
         self.complete = false
     }
 }
